@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -25,8 +26,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
     								FilterChain filterChain) throws ServletException, IOException {
-        String jwt = getJwt(request);
-        if (jwt != null) {
+        Optional<String> jwt = getJwt(request);
+        if (!jwt.isEmpty()) {
             String username = tokenProvider.getUserNameFromJwtToken(jwt);
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -40,13 +41,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getJwt(HttpServletRequest request) {
+    private Optional<String> getJwt(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
-        	
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-        	return authHeader.replace("Bearer ","");
+
+        if (authHeader != null &&  authHeader.startsWith("Bearer ")) {
+            authHeader = authHeader.replace("Bearer ","");
         }
 
-        return null;
+        return Optional.ofNullable(authHeader);
     }
 }

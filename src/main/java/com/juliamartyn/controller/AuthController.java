@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping
@@ -63,14 +63,10 @@ public class AuthController {
 
         User user = new User(signUpRequest.getUsername(), encoder.encode(signUpRequest.getPassword()));
 
-        Set<String> strRoles = signUpRequest.getRole();
-        Set<Role> roles = new HashSet<>();
+        Set<Role> roles = signUpRequest.getRole().stream()
+                .map(roleName -> roleRepository.findByName(roleName))
+                .collect(Collectors.toSet());
 
-        strRoles.forEach(roleName -> {
-            Role role = roleRepository.findByName(roleName);
-            roles.add(role);
-        });
-        
         user.setRoles(roles);
         userRepository.save(user);
 

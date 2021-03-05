@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -28,10 +29,10 @@ public class JwtAuthProvider {
                 .compact();
     }
 
-    public String getUserNameFromJwtToken(String token) {
+    public String getUserNameFromJwtToken(Optional<String> token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
+                .parseClaimsJws(String.valueOf(token))
                 .getBody().getSubject();
     }
 }
