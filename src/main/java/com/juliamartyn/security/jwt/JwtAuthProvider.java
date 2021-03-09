@@ -29,10 +29,10 @@ public class JwtAuthProvider {
                 .compact();
     }
 
-    public String getUserNameFromJwtToken(Optional<String> token) {
+    public String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
-                .parseClaimsJws(String.valueOf(token))
+                .parseClaimsJws(token)
                 .getBody().getSubject();
     }
 }
